@@ -1,8 +1,7 @@
-![Bulwark Logo](https://bulwarkcrypto.com/wp-content/uploads/2018/04/blockexplorer.svg)
+![Vestx Logo](https://www.vestxcoin.com/assets/img/logo.png)
 
-Bulwark Explorer
-&middot;
-[![GitHub license](https://img.shields.io/github/license/bulwark-crypto/bulwark-explorer.svg)](https://github.com/bulwark-crypto/bulwark-explorer/blob/master/COPYING) [![Build Status](https://travis-ci.org/bulwark-crypto/bulwark-explorer.svg?branch=master)](https://travis-ci.org/bulwark-crypto/bulwark-explorer) [![Discord](https://img.shields.io/discord/374271866308919296.svg)](https://discord.me/bulwarkcrypto) [![GitHub version](https://badge.fury.io/gh/bulwark-crypto%2Fbulwark-explorer.svg)](https://badge.fury.io/gh/bulwark-crypto%2Fbulwark-explorer)
+Vestx Explorer
+
 =====
 
 Simple cryptocurrency block explorer system.
@@ -18,16 +17,16 @@ https://nodejs.org/en/download/package-manager/
 
 https://yarnpkg.com/lang/en/docs/install/
 
-It is also required to have the Bulwark daemon running in the background. It is recommended to set this up before beginning to set up the explorer so that it syncs by the time you need it.
+It is also required to have the Vestx daemon running in the background. It is recommended to set this up before beginning to set up the explorer so that it syncs by the time you need it.
 
 Our geniuses here at BulwarkCorp™ have put together a script to do this for you. Just run
 
-`bash script/bulwarkd_setup.sh`
+`bash script/vestxd_setup.sh`
 
-This will install the latest Bulwark wallet and create a rpc username/password before starting the daemon.
+This will install the latest Vestx daemon and create a rpc username/password before starting the daemon.
 
 ## Install
-`git clone https://github.com/bulwark-crypto/bulwark-explorer.git` - copy repo to local folder.
+`git clone https://github.com/anonymouszar/vestx-explorer.git` - copy repo to local folder.
 
 `cd blockex` - change into project directory.
 
