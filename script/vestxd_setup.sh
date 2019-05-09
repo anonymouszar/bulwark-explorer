@@ -1,6 +1,6 @@
 #!/bin/bash
 # Download latest node and install.
-vestxlink=`curl -s https://api.github.com/repos/anonymouszar/vest/releases/latest | grep browser_download_url | grep linux64 | cut -d '"' -f 4`
+vestxlink=`curl -s https://api.github.com/repos/anonymouszar/vestx/releases/latest | grep browser_download_url | grep linux64 | cut -d '"' -f 4`
 mkdir -p /tmp/vestx
 cd /tmp/vestx
 curl -Lo vestx.tar.gz $vestxlink
