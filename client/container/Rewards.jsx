@@ -1,4 +1,3 @@
-
 import Actions from '../core/Actions';
 import Component from '../core/Component';
 import throttle from '../../lib/throttle';
@@ -6,18 +5,17 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import CardTXs from '../component/Card/CardTXs';
+import CardRewards from '../component/Card/CardRewards';
 import HorizontalRule from '../component/HorizontalRule';
 import Pagination from '../component/Pagination';
 import Select from '../component/Select';
 
 import { PAGINATION_PAGE_SIZE } from '../constants';
 
-class Movement extends Component {
+class Rewards extends Component {
   static propTypes = {
-    getTXs: PropTypes.func.isRequired,
-    setTXs: PropTypes.func.isRequired,
-    tx: PropTypes.object.isRequired
+    getRewards: PropTypes.func.isRequired,
+    //@todo rewards: PropTypes.object.isRequired //@todo accept rewards from store & write to store with updated block reward data
   };
 
   constructor(props) {
@@ -28,20 +26,18 @@ class Movement extends Component {
       pages: 0,
       page: 1,
       size: 10,
-      txs: []
+      rewards: []
     };
 
-    //This is a new, better implementation of debouncing. The problem with old approach is that the initial request will be delayed by 800ms. 
-    //First request should not be debounced, only actions after as majority of users will only view first page anyway, we need it to be as fast as possible;
-    this.getThrottledTxs = throttle(() => {
+    this.getThrottledRewards = throttle(() => {
       this.props
-        .getTXs({
+        .getRewards({
           limit: this.state.size,
           skip: (this.state.page - 1) * this.state.size
         })
-        .then(({ pages, txs }) => {
-          this.setState({ pages, txs, loading: false }, () => {
-            this.props.setTXs(txs); // Add this set of new txs to store
+        .then(({ pages, rewards }) => {
+          this.setState({ pages, rewards, loading: false }, () => {
+            //this.props.setRewards(rewards); //@todo
           });
         })
         .catch(error => this.setState({ error, loading: false }));
@@ -49,24 +45,24 @@ class Movement extends Component {
   };
 
   componentDidMount() {
-    this.getTXs();
+    this.getRewards();
   };
 
   componentWillUnmount() {
     if (this.throttledTxs) {
-      clearTimeout(this.getThrottledTxs);
+      clearTimeout(this.getThrottledRewards);
     }
   };
 
-  getTXs = () => {
+  getRewards = () => {
     this.setState({ loading: true }, () => {
-      this.getThrottledTxs();
+      this.getThrottledRewards();
     });
   };
 
-  handlePage = page => this.setState({ page }, this.getTXs);
+  handlePage = page => this.setState({ page }, this.getThrottledRewards);
 
-  handleSize = size => this.setState({ size, page: 1 }, this.getTXs);
+  handleSize = size => this.setState({ size, page: 1 }, this.getThrottledRewards);
 
   render() {
     if (!!this.state.error) {
@@ -87,8 +83,8 @@ class Movement extends Component {
       <div>
         <HorizontalRule
           select={select}
-          title="Movement" />
-        <CardTXs txs={this.state.txs} addBadgeClassToValue={false} />
+          title="Rewards" />
+        <CardRewards rewards={this.state.rewards} addBadgeClassToValue={false} />
         <Pagination
           current={this.state.page}
           className="float-right"
@@ -101,12 +97,12 @@ class Movement extends Component {
 }
 
 const mapDispatch = dispatch => ({
-  getTXs: query => Actions.getTXs(null, query),
-  setTXs: txs => Actions.setTXs(dispatch, txs)
+  getRewards: query => Actions.getRewards(null, query),
+  //setRewards: txs => Actions.setRewards(dispatch, rewards) //@todo
 });
 
 const mapState = state => ({
-  tx: state.txs.length ? state.txs[0] : {}
+  //rewards: //@todo
 });
 
-export default connect(mapState, mapDispatch)(Movement);
+export default connect(mapState, mapDispatch)(Rewards);

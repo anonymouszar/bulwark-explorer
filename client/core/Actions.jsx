@@ -86,7 +86,7 @@ export const getIsBlock = (query) => {
 
 export const getMNs = (query) => {
   return new promise((resolve, reject) => {
-    return getFromWorker('mns', resolve, reject, query);
+    return getFromWorker('mns', resolve, reject, query); // Resolves to getMNs in fetch.worker.js
   });
 };
 
@@ -167,20 +167,45 @@ export const getTXs = (dispatch, query) => {
   });
 };
 
+export const getRewards = (dispatch, query) => {
+  return new promise((resolve, reject) => {
+    return getFromWorker(
+      'rewards',
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: REWARDS });
+        }
+        resolve(payload);
+      },
+      (payload) => {
+        if (dispatch) {
+          dispatch({ payload, type: ERROR });
+        }
+        reject(payload);
+      },
+      query
+    );
+  });
+};
+
+
 export const getTXsWeek = () => {
   return new promise((resolve, reject) => {
     return getFromWorker('txs-week', resolve, reject);
   });
 };
 
+// This is currently the only action that updates anything in the store - Look at Reducers.jsx, txs()
 export const setTXs = (dispatch, txs) => {
   dispatch({ payload: txs, type: TXS });
 };
 
+//@todo Remove, don't think this is used
 export const setWatch = (dispatch, term) => {
   dispatch({ payload: term, type: WATCH_ADD });
 };
 
+//@todo Remove, don't think this is used
 export const removeWatch = (dispatch, term) => {
   dispatch({ payload: term, type: WATCH_REMOVE });
 };
@@ -201,5 +226,6 @@ export default {
   getTXsWeek,
   setTXs,
   setWatch,
-  removeWatch
+  removeWatch,
+  getRewards
 };
