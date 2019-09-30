@@ -52,20 +52,20 @@ server {
     #listen [::]:443 ssl ipv6only=on; # managed by Certbot
     #listen 443 ssl; # managed by Certbot
     #ssl_certificate /etc/letsencrypt/live/explorer.vestxcoin.com/fullchain.pem; # managed by Certbot
-    #ssl_certificate_key /etc/letsencrypt/live/explorer.bulwarkcrypto.com/privkey.pem; # managed by Certbot
+    #ssl_certificate_key /etc/letsencrypt/live/explorer.vestxcoin.com/privkey.pem; # managed by Certbot
     #include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     #ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 }
 
 #server {
-#    if ($host = explorer.bulwarkcrypto.com) {
+#    if ($host = explorer.vestxcoin.com) {
 #        return 301 https://\$host\$request_uri;
 #    } # managed by Certbot
 #
 #	listen 80 default_server;
 #	listen [::]:80 default_server;
 #
-#	server_name explorer.bulwarkcrypto.com;
+#	server_name explorer.vestxcoin.com;
 #   return 404; # managed by Certbot
 #}
 EOL
@@ -92,13 +92,13 @@ installVestx () {
     mkdir -p /tmp/vestx
     cd /tmp/vestx
     curl -Lo vestx.tar.gz $vestxlink
-    tar -xzf bulwark.tar.gz
+    tar -xzf vestx.tar.gz
     sudo mv ./bin/* /usr/local/bin
     cd
     rm -rf /tmp/vestx
     mkdir -p /home/explorer/.vestx
     cat > /home/explorer/.vestx/vestx.conf << EOL
-rpcport=52544
+rpcport=20001
 rpcuser=$rpcuser
 rpcpassword=$rpcpassword
 daemon=1
@@ -138,14 +138,14 @@ const config = {
     'prefix': '/api',
     'timeout': '180s'
   },
-  'coinMarketCap': {
-    'api': 'http://api.coinmarketcap.com/v1/ticker/',
-    'ticker': 'vestx'
+  'coingecko': {
+    api: 'https://api.coingecko.com/api/v3/coins/',
+    ticker: 'vestxcoin'
   },
   'db': {
     'host': '127.0.0.1',
     'port': '27017',
-    'name': 'blockex',
+    'name': 'vestx',
     'user': '$rpcuser',
     'pass': '$rpcpassword'
   },
@@ -190,7 +190,7 @@ clear
 
 # Variables
 echo "Setting up variables..."
-vestxlink=`curl -s https://api.github.com/repos/anonymouszar/vestx/releases/latest | grep browser_download_url | grep linux64 | cut -d '"' -f 4`
+vestxlink=`curl -s https://api.github.com/repos/vestx/vestx/releases/latest | grep browser_download_url | grep linux64 | cut -d '"' -f 4`
 rpcuser=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo '')
 rpcpassword=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32 ; echo '')
 echo "Repo: $vestxlink"

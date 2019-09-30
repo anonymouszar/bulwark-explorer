@@ -122,9 +122,6 @@ async function vout(rpctx, blockHeight) {
         case 'nonstandard':
           // These are known non-standard txouts that we won't store in txout
           break;
-        case 'zerocoinmint':
-          toAddress = 'ZEROCOIN';
-          break;
         default:
           // By default take the first address as the "toAddress"
           toAddress = vout.scriptPubKey.addresses[0];

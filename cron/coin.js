@@ -15,30 +15,31 @@ const Coin = require('../model/coin');
 async function syncCoin() {
   const date = moment().utc().startOf('minute').toDate();
   // Setup the coinmarketcap.com api url.
-  const url = `${ config.coinMarketCap.api }${ config.coinMarketCap.ticker }`;
+  const url = `${ config.coingecko.api }${ config.coingecko.ticker }`;
 
-  const info = await rpc.call('getinfo');
-  const masternodes = await rpc.call('getmasternodecount');
+  const info = await rpc.call('getblockchaininfo');
+  const masternodes = await rpc.call('masternode',['count']);
   const nethashps = await rpc.call('getnetworkhashps');
 
   let market = await fetch(url);
-  if (Array.isArray(market)) {
-    market = market.length ? market[0] : {};
-  }
+  // if (Array.isArray(market)) {
+  //   market = market.length ? market[0] : {};
+  // }
 
   const coin = new Coin({
-    cap: market.market_cap_usd,
+    cap: market.market_data.market_cap.usd,
     createdAt: date,
     blocks: info.blocks,
-    btc: market.price_btc,
+    btc: market.tickers[0].converted_last.btc,
+    ltc: market.tickers[0].last,
     diff: info.difficulty,
     mnsOff: masternodes.total - masternodes.stable,
     mnsOn: masternodes.stable,
     netHash: nethashps,
     peers: info.connections,
     status: 'Online',
-    supply: market.available_supply, // TODO: change to actual count from db.
-    usd: market.price_usd
+    supply: market.market_data.circulating_supply, // TODO: change to actual count from db.
+    usd: market.tickers[0].converted_last.usd
   });
 
   await coin.save();

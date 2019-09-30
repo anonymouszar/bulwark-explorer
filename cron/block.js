@@ -137,7 +137,7 @@ async function syncBlocks(start, stop, clean = false) {
       Current block: ${block.height}\n
       Finalization block: ${finalBlock}\n
       Budget payment block: ${superblock}\n
-      https://explorer.bulwarkcrypto.com/#/block/${block.height}\n
+      https://explorer.vestxcoin.com/#/block/${block.height}\n
       `;
     }
     // If finalization block.
@@ -146,7 +146,7 @@ async function syncBlocks(start, stop, clean = false) {
       Finalization block!\n
       \n
       Block: ${block.height}\n
-      https://explorer.bulwarkcrypto.com/#/block/${block.height}\n
+      https://explorer.vestxcoin.com/#/block/${block.height}\n
       `;
     }
     // If budget payment block start then notify.
@@ -155,7 +155,7 @@ async function syncBlocks(start, stop, clean = false) {
       Governance payment(s) started!\n
       \n
       Block: ${block.height}\n
-      https://explorer.bulwarkcrypto.com/#/block/${block.height}\n
+      https://explorer.vestxcoin.com/#/block/${block.height}\n
       `;
     }
     // Just every block for now while testing.

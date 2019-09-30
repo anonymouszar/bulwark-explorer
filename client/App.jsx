@@ -172,7 +172,6 @@ class App extends Component {
                   <Route exact path="/rewards" component={Rewards} />
                   <Route exact path="/movement" component={Movement} />
                   <Route exact path="/peer" component={Peer} />
-                  <Route exact path="/pos/:amount" component={PoS} />
                   <Route exact path="/statistics" component={Statistics} />
                   <Route exact path="/top" component={Top100} />
                   <Route exact path="/tx/:hash" component={TX} />

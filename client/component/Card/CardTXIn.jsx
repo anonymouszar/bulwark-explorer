@@ -26,8 +26,6 @@ export default class CardTXIn extends Component {
       inputLabel = vin.relatedVout.address;
     } else if (vin.coinbase) {
       inputLabel = 'COINBASE';
-    } else if (vin.scriptSig && vin.scriptSig.asm == 'OP_ZEROCOINSPEND') {
-      inputLabel = 'ZEROCOIN';
     }
 
     return inputLabel;

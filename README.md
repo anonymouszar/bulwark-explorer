@@ -19,7 +19,7 @@ https://yarnpkg.com/lang/en/docs/install/
 
 It is also required to have the Vestx daemon running in the background. It is recommended to set this up before beginning to set up the explorer so that it syncs by the time you need it.
 
-Our geniuses here at BulwarkCorp™ have put together a script to do this for you. Just run
+Just run
 
 `bash script/vestxd_setup.sh`
 
