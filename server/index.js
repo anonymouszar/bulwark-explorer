@@ -1,5 +1,5 @@
 
-require('babel-polyfill');
+// require('babel-polyfill');
 const cluster = require('cluster');
 
 // Master
@@ -34,6 +34,7 @@ else {
 
   /* Database */
   // Connect to the database.
+  mongoose.set('useCreateIndex', true);
   mongoose.connect(db.getDSN(), db.getOptions());
 
   /* API */
@@ -45,7 +46,7 @@ else {
   router(app);
   // Start the server.
   app.listen(config.api.port, () => {
-    console.log(`BlocEx running on port ${ config.api.port }`);
+    console.log(`VESTX running on port ${ config.api.port }`);
   });
 
   // Export for testing.

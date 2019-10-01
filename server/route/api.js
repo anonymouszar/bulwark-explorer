@@ -2,6 +2,7 @@
 const express = require('express');
 const blockex = require('../handler/blockex');
 const iquidus = require('../handler/iquidus');
+const custom = require('../handler/custom');
 
 const router = express.Router();
 
@@ -20,7 +21,6 @@ router.get('/peer', blockex.getPeer);
 router.get('/supply', blockex.getSupply);
 router.get('/top100', blockex.getTop100);
 router.get('/tx', blockex.getTXs);
-router.get('/rewards', blockex.getRewards);
 router.get('/tx/latest', blockex.getTXLatest);
 router.get('/tx/week', blockex.getTXsWeek());
 router.get('/tx/:hash', blockex.getTX);
@@ -33,5 +33,8 @@ router.get('/getblockhash', iquidus.getblockhash);
 router.get('/getblock', iquidus.getblock);
 router.get('/getrawtransaction', iquidus.getrawtransaction);
 router.get('/getnetworkhashps', iquidus.getnetworkhashps);
+
+// Custom
+router.get('/custom/supply', custom.getCustomSupply);
 
 module.exports =  router;

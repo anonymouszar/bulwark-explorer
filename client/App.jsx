@@ -20,21 +20,21 @@ import FAQ from './container/FAQ';
 import Masternode from './container/Masternode';
 import Movement from './container/Movement';
 import Overview from './container/Overview';
-import Rewards from './container/Rewards';
 import Peer from './container/Peer';
-import PoS from './container/PoS';
 import Statistics from './container/Statistics';
 import Top100 from './container/Top100';
 import TX from './container/TX';
 
 // Layout
-import CoinSummary from './container/CoinSummary';
-import Footer from './component/Footer';
+// import CoinSummary from './container/CoinSummary';
+// import Footer from './component/Footer';
 import Icon from './component/Icon';
 import Loading from './component/Loading';
 import Menu from './component/Menu';
+import FooterMenu from './component/Menu/FooterMenu';
 import Notification from './component/Notification';
 import SearchBar from './component/SearchBar';
+import MenuData from './component/Menu/menuData';
 
 class App extends Component {
   static propTypes = {
@@ -50,7 +50,7 @@ class App extends Component {
     this.state = {
       init: true,
       limit: 10,
-      searches: []
+      searches: [],
     };
     this.timer = { coins: null, txs: null };
   };
@@ -61,9 +61,9 @@ class App extends Component {
 
   componentDidMount() {
     promise.all([
-      this.props.getCoins({ limit: 12 }),
-      this.props.getTXs({ limit: 10 })
-    ])
+        this.props.getCoins({ limit: 12 }),
+        this.props.getTXs({ limit: 10 })
+      ])
       .then(() => {
         this.getCoins();
         this.getTXs();
@@ -116,6 +116,7 @@ class App extends Component {
   };
 
   handleSearch = (term) => {
+    // console.log(term)
     // If term doesn't match then ignore.
     if (!isTX(term) && !isBlock(term) && !isAddress(term)) {
       return;
@@ -127,18 +128,18 @@ class App extends Component {
     // Setup path for search.
     let path = '/#/';
     if (isAddress(term)) {
-      document.location.href = `/#/address/${term}`;
+      document.location.href = `/#/address/${ term }`;
     } else if (!isNaN(term)) {
-      document.location.href = `/#/block/${term}`;
+      document.location.href = `/#/block/${ term }`;
     } else {
       this.props
         .getIsBlock(term)
         .then((is) => {
-          document.location.href = `/#/${is ? 'block' : 'tx'}/${term}`;
+          document.location.href = `/#/${ is ? 'block' : 'tx' }/${ term }`;
         });
     }
   };
-
+  
   render() {
     if (this.state.init) {
       return (
@@ -149,36 +150,44 @@ class App extends Component {
     return (
       <HashRouter>
         <div className="page-wrapper">
-          <Menu onSearch={this.handleSearch} />
+          <Menu onSearch={ this.handleSearch } />
           <div className="content" id="body-content">
             <div className="content__wrapper">
               {/* <Notification /> */}
-              <CoinSummary
-                onRemove={this.handleRemove}
-                onSearch={this.handleSearch}
-                searches={this.state.searches.reverse()} />
-              <SearchBar
-                className="d-none d-md-block mb-3"
-                onSearch={this.handleSearch} />
-              <div className="content__inner-wrapper">
+              <div className="row container-fluid searchContainer m-0">
+                {/* <div className="container">
+                  <div className="col-6">
+                    {this.getPageName()}
+                  </div>
+                  <div className="col-6 ml-auto">
+                    <SearchBar
+                      className="d-none d-md-block mb-3"
+                      onSearch={ this.handleSearch } />
+                  </div>
+                </div> */}
+              </div>
+              <div className="content__inner-wrapper container mt-4">
                 <Switch>
-                  <Route exact path="/" component={Overview} />
-                  <Route exact path="/address/:hash" component={Address} />
-                  <Route exact path="/api" component={API} />
-                  <Route exact path="/block/:hash" component={Block} />
-                  <Route exact path="/coin" component={CoinInfo} />
-                  <Route exact path="/faq" component={FAQ} />
-                  <Route exact path="/masternode" component={Masternode} />
-                  <Route exact path="/rewards" component={Rewards} />
-                  <Route exact path="/movement" component={Movement} />
-                  <Route exact path="/peer" component={Peer} />
-                  <Route exact path="/statistics" component={Statistics} />
-                  <Route exact path="/top" component={Top100} />
-                  <Route exact path="/tx/:hash" component={TX} />
-                  <Route component={Error404} />
+                  <Route exact path="/" component={ Overview } />
+                  <Route exact path="/address/:hash" component={ Address } />
+                  <Route exact path="/api" component={ API } />
+                  <Route exact path="/block/:hash" component={ Block } />
+                  <Route exact path="/coin" component={ CoinInfo } />
+                  <Route exact path="/faq" component={ FAQ } />
+                  <Route exact path="/masternode" component={ Masternode } />
+                  <Route exact path="/movement" component={ Movement } />
+                  <Route exact path="/peer" component={ Peer } />
+                  <Route exact path="/statistics" component={ Statistics } />
+                  <Route exact path="/top" component={ Top100 } />
+                  <Route exact path="/tx/:hash" component={ TX } />
+                  <Route component={ Error404 } />
                 </Switch>
               </div>
-              <Footer />
+            </div>
+            {/* <Footer /> */}
+            <FooterMenu links={MenuData} onSearch={ this.handleSearch } />
+            <div className="container" style={{ fontSize: '14px', color: 'gray', paddingBottom: '40px', textAlign: 'left' }}>
+              <p>ⓒ 2019 Soverain Technology Group - All Rights Reserved <a href="https://www.vestxcoin.com">www.vestxcoin.com</a></p>
             </div>
           </div>
         </div>

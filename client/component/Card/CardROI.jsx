@@ -6,76 +6,56 @@ import React from 'react';
 
 import Card from './Card';
 
-const CardROI = ({ coin, supply }) => {
+const CardROI = ({ coin }) => {
   const mncoins = blockchain.mncoins;
   const mns = coin.mnsOff + coin.mnsOn;
   const subsidy = blockchain.getMNSubsidy(coin.blocks, mns, coin.supply);
   const roi = blockchain.getROI(subsidy, coin.mnsOn);
 
   return (
-    <Card>
-      <div className="mb-3">
-        <div className="h3">
-          { coin.mnsOn } / { mns }
-        </div>
-        <div className="h5">
+    <Card title="Soverain Coin Information and Metrics">
+      <div className="row">
+        <div className="col-sm-12 col-md-6">
           Active/Total Masternodes
         </div>
-      </div>
-      <div className="mb-3">
-        <div className="h3">
-          { numeral(roi).format('0,0.0000') }%
+        <div className="col-sm-12 col-md-3">
+          { coin.mnsOn } / { mns }
         </div>
-        <div className="h5">
+        <div className="col-sm-12 col-md-6">
           Estimated ROI
         </div>
-      </div>
-      <div className="mb-3">
-        <div className="h3">
-          { numeral(supply ? supply.t : 0.0).format('0,0.0000') } VESTX
+        <div className="col-sm-12 col-md-3">
+          { numeral(roi).format('0,0.0000') }%
         </div>
-        <div className="h5">
+        <div className="col-sm-12 col-md-6">
           Coin Supply (Total)
         </div>
-      </div>
-      <div className="mb-3">
-        <div className="h3">
-          { numeral(supply ? supply.c - (mns * mncoins) : 0.0).format('0,0.0000') } VESTX
+        <div className="col-sm-12 col-md-6">
+          { numeral(coin.supply ? coin.supply : 0.0).format('0,0.0000') }
         </div>
-        <div className="h5">
-          Coin Supply (Circulating)
-        </div>
-      </div>
-      <div className="mb-3">
-        <div className="h3">
-          { numeral(coin.cap * coin.btc).format('0,0.0000') } BTC
-        </div>
-        <div className="h5">
+        <div className="col-sm-12 col-md-6">
           Market Cap BTC
         </div>
-      </div>
-      <div className="mb-3">
-        <div className="h3">
-          { numeral(coin.cap).format('$0,0.00') }
+        <div className="col-sm-12 col-md-6">
+          { numeral(coin.btc * coin.supply).format('0,0.0000') } BTC
         </div>
-        <div className="h5">
+        <div className="col-sm-12 col-md-6">
           Market Cap USD
         </div>
-      </div>
-      <div className="mb-3">
-        <div className="h3">
+        <div className="col-sm-12 col-md-6">
+          { numeral(coin.cap).format('$0,0.00') }
+        </div>
+        <div className="col-sm-12 col-md-6">
+          Coins Locked 
+        </div>
+        <div className="col-sm-12 col-md-6">
           { numeral(mns * mncoins).format('0,0.0000') } VESTX
         </div>
-        <div className="h5">
-          Coins Locked
-        </div>
-      </div>
-      <div className="mb-3">
-        <div className="h3">
-          { numeral(mncoins * coin.btc).format('0,0.0000') } BTC / { numeral(mncoins * coin.usd).format('$0,0.00') }
-        </div>
-        <div className="h5">
+        <div className="col-sm-12 col-md-6">
           Masternode Worth
+        </div>
+        <div className="col-sm-12 col-md-6">
+          { numeral(mncoins * coin.btc).format('0,0.0000') } BTC / { numeral(mncoins * coin.usd).format('$0,0.00') }
         </div>
       </div>
     </Card>
@@ -83,8 +63,7 @@ const CardROI = ({ coin, supply }) => {
 };
 
 CardROI.propTypes = {
-  coin: PropTypes.object.isRequired,
-  supply: PropTypes.object.isRequired
+  coin: PropTypes.object.isRequired
 };
 
 export default CardROI;

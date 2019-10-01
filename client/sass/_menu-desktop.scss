@@ -1,15 +1,29 @@
+// .navbar {
+//   height: 50px;
+
+//   .nav-link {
+//     font-size: 16px;
+//     margin-right: 6px;
+//     color: #1ff5ff;
+
+//     &:hover,
+//     &:active,
+//     &:focus {
+//       color: #d9eced;
+//     }
+//   }
+
+//   .menu-desktop__logo {
+//     height: 40px;
+//   }
+// }
+
 .menu-desktop {
-
-	background: rgb(41, 77, 234);
-
-	box-shadow: #7d7d7d 0px 0px 16px;
-	color: $white;
-    float: left;
-	font-weight: lighter;
-    height: 100%;
-    margin: 0;
-    min-height: 550px;
-	padding: 1em 2em 2em;
+	color: #1ff5ff;
+	font-weight: normal;
+  // height: 60px;
+  margin: 0;
+  // padding: 0.5em 1em 0.5em 1em;
 
 	@include media-breakpoint-down(sm) {
 		display: none;
@@ -49,23 +63,57 @@
 		to {
 			opacity: 1;
 		}
-	}
+  }
 
+	// a:active {
+	// 	color: $theme-light-blue;
+  // }
+
+	// &__item--is-active {
+	// 	span {
+	// 	  color: $theme-dark-blue;
+	// 	  padding-bottom: 3px;
+	// 	  // border-bottom: 1px solid $theme-dark-blue;
+	// 	  box-shadow: 0 1px lighten($theme-dark-blue, 65%), 0 3px lighten($theme-dark-blue, 35%);
+	// 	}
+	// }
+
+	a:hover {
+		color: $theme-light-blue;
+		transition: 4s;
+  }
 
 	&__content-wrapper {
-		display: flex;
-		flex-direction: column;
-		height: 75%;
-		max-height: 600px;
-		justify-content: space-between;
+    display: flex;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: center;
 	}
 
 	&__header {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 3.5em;
-	}
+    min-height: 3.5em;
+    padding-left: 1.5em;
+    // float: left;
+  }
+  
+  &__nav {
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 46px;
+    // margin-right: auto;
+  }
+
+  &__social {
+    display: flex;
+    justify-content: flex-start;
+    // margin-right: auto;
+  }
 
 	&__toggle {
 		cursor: pointer;
@@ -74,12 +122,9 @@
 		width: 24px;
 	}
 
-	&__logo {
-		height: auto;
-		margin-right: 2em;
-		/* Used to align with searchbar */
-		width: 140px;
-	}
+  &__logo {
+    height: 40px;
+  }
 
 	&__title {
 		margin: 0;
@@ -89,84 +134,74 @@
 	&__item {
 		display: flex;
 		align-items: center;
-		color: $white;
+		color: #1ff5ff;
 		line-height: 1;
-		margin: 0;
-		padding: 0;
+    margin-right: 40px;
+    
+    // padding: 0;
+    font-family: $fontSmall;
+    font-size: 16px;
 		position: relative;
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
+		// transition: all 1s cubic-bezier(0, 1, .5, 1);
 
 		&:hover {
-			color: $white;
+			color: $theme-light-blue;
 			text-decoration: none;
 		}
-
-	}
-
-	&__item-icon {
-		height: 24px;
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
-		width: 24px;
 	}
 
 	&__item-label {
-		/*opacity: 1;
-		transition: opacity .5s;*/
-		/*position: absolute;*/
-		margin-left: 1em;
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
-		/*Prevent text wrapping when width is changed*/
 		white-space: nowrap;
-	}
+  }
+  
+  &__footer {
+    color: red;
+  }
 
-	&__item-indicator {
-		display: none;
-		position: absolute;
-		right: -32px;
-	}
+	// &__item-indicator {
+	// 	display: none;
+	// 	position: absolute;
+	// 	right: -32px;
+	// }
 
-	&__item--is-active &__item-indicator {
-		display: block;
-	}
-
-	&__settings {
-		height: 24px;
-		width: 24px;
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
-		margin: 0 auto;
-		position: relative;
-		&:hover {
-			color: $white;
-			text-decoration: none;
-		}
-	}
+	// &__settings {
+	// 	height: 24px;
+	// 	width: 24px;
+	// 	// transition: all 1s cubic-bezier(0, 1, .5, 1);
+	// 	margin: 0 auto;
+	// 	position: relative;
+	// 	&:hover {
+	// 		color: #262626;
+	// 		text-decoration: none;
+	// 	}
+	// }
 
 	/*Opened modifier*/
-	&--open {
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
-		width: $menu-width-open;
-	}
+    &--open {
+    	// transition: all 1s cubic-bezier(0, 1, .5, 1);
+    	width: $menu-width-open;
+    }
 
-	&--open &__toggle {
-		transform: rotate(-90deg);
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
-	}
+    &--open &__toggle {
+    	transform: rotate(-90deg);
+    	// transition: all 1s cubic-bezier(0, 1, .5, 1);
+    }
 
 	&--open &__logo {
-		animation: fadein 0.5s;
-			-moz-animation: fadein 0.5s;
-				-webkit-animation: fadein 0.5s;
-					-o-animation: fadein 0.5s;
+		animation: fadein 2s;
+			-moz-animation: fadein 2s;
+				-webkit-animation: fadein 2s;
+					-o-animation: fadein 2s;
 	}
 
 	/*Closed modifier*/
 	&--close {
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
+		// transition: all 1s cubic-bezier(0, 1, .5, 1);
 		width: $menu-width-close;
 	}
 
 	&--close &__toggle {
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
+		// transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 
 	&--close &__logo {
@@ -174,35 +209,35 @@
 		width: 0;
 		margin: 0;
 		transform: scale(0);
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
+		// transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 
 	&--close &__item-icon {
 		margin: 0 auto;
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
+		// transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 
 	&--close &__item-label {
 		display: none;
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
+		// transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 
 	&--close &__settings {
 		margin: 0 auto;
 		position: relative;
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
+		// transition: all 1s cubic-bezier(0, 1, .5, 1);
 	}
 
-	a, a:visited {
-		color: $white;
-		font-family: $fontSmall;
-		font-size: 18px;
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
-	}
-
-	a:hover {
-		color: $gray-light;
-		transition: all 1s cubic-bezier(0, 1, .5, 1);
-	}
+	// a, a:visited {
+	// 	// color: #262626;
+	// 	font-family: $fontSmall;
+	// 	font-size: 18px;
+	// 	// transition: all 1s cubic-bezier(0, 1, .5, 1);
+	// }
 }
 
+.sove-link {
+  color: $blue-dark;
+  padding-left: 15px;
+  padding-right: 15px;
+}

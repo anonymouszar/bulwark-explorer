@@ -1,17 +1,17 @@
 const APIdata = [
-  {
+  {    
     heading: 'API Calls',
     subHeading: 'Return data from coind',
     calls: [
         {
           name: 'getAddress [hash]',
           info: 'Returns information for given address.',
-          path: '/api/address/bFY9cyZqZTYHGfduXo7CVNTMiCDeJ1q4gA'
+          path: '/api/address/VCudoFKi8a2CnYnuWaG1hPmsjMh9HTfsSW'
         },
         {
           name: 'getBlock [hash] [height]',
           info: 'Returns block information for the given hash or height.',
-          path: '/api/block/00000000000072a98f7d8385809a1f71af983d22efce85e63ec3d75f04412823'
+          path: '/api/block/c3847de7157f1d88352ddf137398e25fe24234a1e778c19e9301a3254279b23c'
         },
         {
           name: 'getBlockAverage',
@@ -21,7 +21,7 @@ const APIdata = [
         {
           name: 'getCoin',
           info: 'Returns coin information.',
-          path: '/api/coin/'
+          path: '/api/coin'
         },
         {
           name: 'getCoinHistory',
@@ -36,7 +36,7 @@ const APIdata = [
         {
           name: 'getMasternodeByAddress',
           info: 'Returns masternode information by Wallet Address.',
-          path: '/api/masternode/bJAUCVr24X84c9k6QVuSvdjbuC69S7zMeG'
+          path: '/api/masternode/VSU2ze83zELrzv71fNogwygsVm4ktBsrCY'
         },
         {
           name: 'getMasternodeCount',
@@ -55,23 +55,13 @@ const APIdata = [
         },
         {
           name: 'getSupply',
-          info: 'Returns circulating and total supply information.<br />https://github.com/coincheckup/crypto-supplies',
+          info: 'Returns circulating and total supply information.',
           path: '/api/supply'
-        },
-        {
-          name: 'getTop100',
-          info: 'Returns top 100',
-          path: '/api/top100'
         },
         {
           name: 'getTXs',
           info: 'Returns transaction information.',
           path: '/api/tx'
-        },
-        {
-          name: 'getRewards',
-          info: 'Returns block rewards information.',
-          path: '/api/rewards'
         },
         {
           name: 'getTXLatest',
@@ -81,7 +71,7 @@ const APIdata = [
         {
           name: 'getTX [hash]',
           info: 'Returns information for the given transaction.',
-          path: '/api/tx/790c2bdeb46189f180d4a83d7b16aa75a75da1b91d117fea7a7ae818239f0137'
+          path: '/api/tx/486c5d307834e2696bec8b58c670024edfa1ad292c8271027eecfe447f2c9547'
         },
         {
           name: 'getDifficulty',
@@ -142,17 +132,17 @@ const APIdata = [
         {
           name: 'Transaction (/#/tx/[hash])',
           info: 'Returns transaction information',
-          path: '/#/tx/b1725bcb70b62faa0b273e5385b0225c2ef589bd638cfa582b6cb34f9430d0b9'
+          path: '/#/tx/486c5d307834e2696bec8b58c670024edfa1ad292c8271027eecfe447f2c9547'
         },
         {
           name: 'Block (/#/block/[hash|height]',
           info: 'Returns block information.',
-          path: '/#/block/000000000001eb792fe1ac3f901d2373509769f5179d9fe2fd3bf8cb3b6ebec9'
+          path: '/#/block/c3847de7157f1d88352ddf137398e25fe24234a1e778c19e9301a3254279b23c '
         },
         {
           name: 'Address (/#/address/[hash]',
           info: 'Returns address information.',
-          path: '/#/block/000000000001eb792fe1ac3f901d2373509769f5179d9fe2fd3bf8cb3b6ebec9'
+          path: '/#/address/VRm2yKriQF9qJJxyoHuYLWCqiVsxMC4SPh'
         },
         // { name: 'qr (qr/[hash]',
         //   info: 'Returns qr code information.',

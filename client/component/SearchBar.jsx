@@ -9,7 +9,7 @@ import Icon from './Icon';
 
 export default class SearchBar extends Component {
   static defaultProps = {
-    placeholder: 'You may enter a block height, block hash, tx hash or address and hit enter.',
+    placeholder: 'You can search by block height, hash, or address.',
   }
 
   static propTypes = {
@@ -36,11 +36,11 @@ export default class SearchBar extends Component {
     return (
       <div className="animated fadeIn" style={{ width: '100%' }}>
         <div className={ `search ${ props.className ? props.className : '' }` }>
+          <Icon name="search" className="search__icon" />
           <input
             className="search__input"
             onKeyPress={ this.handleKeyPress }
             placeholder={ props.placeholder } />
-          <Icon name="search" className="search__icon" />
         </div>
       </div>
     );

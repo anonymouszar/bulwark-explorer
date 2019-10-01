@@ -7,16 +7,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Table from '../Table';
-import config from '../../../config'
 
-//@todo this is wrong name for this card, it should be CardVouts
 export default class CardTXOut extends Component {
   static defaultProps = {
-    txs: [] //@todo should be vouts
+    tx: {}
   };
 
   static propTypes = {
-    txs: PropTypes.array.isRequired
+    tx: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -29,21 +27,80 @@ export default class CardTXOut extends Component {
     };
   };
 
-  render() {
+  render () {
+    let isCoinStake = this.props.tx.vin[0].coinstake
+    let isZerocoinStake = this.props.tx.vin[0].zerocoinstake
     return (
       <Table
-        cols={ this.state.cols }
-        data={ this.props.txs.map(tx => ({
-          ...tx,
-          address: (
-            <Link to={ `/address/${ tx.address }` }>{ tx.address }</Link>
-          ),
-          value: (
-            <span className="badge badge-success">
-              { numeral(tx.value).format(config.coinDetails.coinNumberFormat) } {config.coinDetails.shortName}
+        cols={this.state.cols}
+        data={this.props.tx.vout.map(vout => {
+          if (isZerocoinStake && vout.address !== 'NON_STANDARD') {
+            let voutValue
+            if (vout.address === 'ZERO_COIN_MINT') {
+              voutValue = <div>
+                <span className="badge badge-success">STAKE REWARD</span>
+                <span className="badge badge-success">
+                  {numeral(vout.value).format('0,0.0000')} VESTX
+                   </span>
+              </div>
+            } else {
+              voutValue = <div>
+                <span className="badge badge-success">MN REWARD</span>
+                <span className="badge badge-success">
+                  {numeral(vout.value).format('0,0.0000')} VESTX
+                   </span>
+              </div>
+            }
+            return (
+              {
+                ...vout,
+                address: (
+                  <Link to={`/address/${ vout.address }`}>{vout.address}</Link>
+                ),
+                value: voutValue
+              })
+          } else if (isCoinStake && vout.address !== 'NON_STANDARD') {
+            let voutValue
+            if (vout.address === this.props.tx.vin[0].address) {
+              voutValue = <div>
+                <span className="badge badge-success">STAKE REWARD</span>
+                <span className="badge badge-success">
+                  {numeral(vout.value).format('0,0.0000')} VESTX
+                   </span>
+              </div>
+            } else {
+              voutValue = <div>
+                <span className="badge badge-success">MN REWARD</span>
+                <span className="badge badge-success">
+                  {numeral(vout.value).format('0,0.0000')} VESTX
+                   </span>
+              </div>
+            }
+            return (
+              {
+                ...vout,
+                address: (
+                  <Link to={`/address/${ vout.address }`}>{vout.address}</Link>
+                ),
+                value: voutValue
+              })
+          } else {
+            return (
+              {
+                ...vout,
+                address: (
+                  <Link to={`/address/${ vout.address }`}>{vout.address}</Link>
+                ),
+                value: (
+
+                  <span className="badge badge-success">
+              {numeral(vout.value).format('0,0.0000')} VESTX
             </span>
-          )
-        })) } />
-    );
+                )
+              })
+          }
+
+        })}/>
+    )
   };
 }

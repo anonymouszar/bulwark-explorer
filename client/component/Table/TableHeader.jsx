@@ -13,8 +13,6 @@ const TableHeader = (props) => {
         col = col.title;
       }
 
-      //@todo add alignment & tooltipTitle options
-
       return (
         <th key={ idx } >{ col }</th>
       )

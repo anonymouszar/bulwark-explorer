@@ -1,5 +1,5 @@
-
-require('babel-polyfill');
+const _ = require('lodash')
+// require('babel-polyfill');
 require('../lib/cron');
 const config = require('../config');
 const { exit, rpc } = require('../lib/cron');
@@ -18,11 +18,15 @@ async function syncPeer() {
   const date = moment().utc().startOf('minute').toDate();
 
   const peers = await rpc.call('getpeerinfo');
-  const inserts = [];
+  let inserts = [];
   await forEach(peers, async (peer) => {
     const parts = peer.addr.split(':');
     if (parts[0].substr(0, 1) === '[') {
       return;
+    }
+
+    if (!peer.subver) {
+      return
     }
 
     const url = `${ config.freegeoip.api }${ parts[0] }`;
@@ -45,8 +49,9 @@ async function syncPeer() {
     inserts.push(p);
   });
 
+  inserts =  _.uniqBy(inserts, '_id');
   if (inserts.length) {
-    await Peer.remove({});
+    await Peer.deleteMany({});
     await Peer.insertMany(inserts);
   }
 }

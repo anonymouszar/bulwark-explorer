@@ -28,16 +28,16 @@ describe('RPC', () => {
   });
 
   it('getblockhash', (done) => {
-    rpc.call('getblockhash', [1])
+    rpc.call('getblockhash', [0])
       .then((res) => {
         res.should.be.a('string');
-        res.should.eq('0000b6ed9b63b9493d29464cd3d34693c5ba7bf1ee749027785bfc716f748368');
+        res.should.eq('0000068e7ab8e264f6759d2d81b29e8b917c10b04db47a9a0bb3cba3fba5d574');
         done();
       });
   });
 
   it('getblock', (done) => {
-    rpc.call('getblock', ['0000b6ed9b63b9493d29464cd3d34693c5ba7bf1ee749027785bfc716f748368'])
+    rpc.call('getblock', ['0000068e7ab8e264f6759d2d81b29e8b917c10b04db47a9a0bb3cba3fba5d574'])
       .then((res) => {
         res.hash.should.be.a('string');
         res.confirmations.should.be.a('number');
@@ -54,7 +54,7 @@ describe('RPC', () => {
   });
 
   it('getrawtransaction', (done) => {
-    rpc.call('getrawtransaction', ['97e796105f93e694efe4f0b30748918ac1c6d1716d2344cd66b5c96eb4e342c2'])
+    rpc.call('getrawtransaction', ['788282ec3f87feffb231e7a2f12a3e9883355e4f30b9e5be6255d4523f6e2357'])
       .then((res) => {
         res.should.be.a('string');
         res.should.eq('01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff03510101ffffffff0100f8a92e8a2c000023210240b7da431af18442e8d2dab9f68be934c955f1a218a7b6bb1e4f6cddabe25a74ac00000000');

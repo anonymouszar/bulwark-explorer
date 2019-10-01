@@ -1,7 +1,6 @@
 
 import Actions from '../core/Actions';
 import Component from '../core/Component';
-import throttle from '../../lib/throttle';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -22,6 +21,7 @@ class Movement extends Component {
 
   constructor(props) {
     super(props);
+    this.debounce = null;
     this.state = {
       error: null,
       loading: true,
@@ -30,22 +30,6 @@ class Movement extends Component {
       size: 10,
       txs: []
     };
-
-    //This is a new, better implementation of debouncing. The problem with old approach is that the initial request will be delayed by 800ms. 
-    //First request should not be debounced, only actions after as majority of users will only view first page anyway, we need it to be as fast as possible;
-    this.getThrottledTxs = throttle(() => {
-      this.props
-        .getTXs({
-          limit: this.state.size,
-          skip: (this.state.page - 1) * this.state.size
-        })
-        .then(({ pages, txs }) => {
-          this.setState({ pages, txs, loading: false }, () => {
-            this.props.setTXs(txs); // Add this set of new txs to store
-          });
-        })
-        .catch(error => this.setState({ error, loading: false }));
-    }, 800);
   };
 
   componentDidMount() {
@@ -53,14 +37,36 @@ class Movement extends Component {
   };
 
   componentWillUnmount() {
-    if (this.throttledTxs) {
-      clearTimeout(this.getThrottledTxs);
+    if (this.debounce) {
+      clearTimeout(this.debounce);
+      this.debounce = null;
     }
   };
 
   getTXs = () => {
     this.setState({ loading: true }, () => {
-      this.getThrottledTxs();
+      if (this.debounce) {
+        clearTimeout(this.debounce);
+      }
+
+      this.debounce = setTimeout(() => {
+        this.props
+          .getTXs({
+            limit: this.state.size,
+            skip: (this.state.page - 1) * this.state.size
+          })
+          .then(({ pages, txs }) => {
+            if (this.debounce) {
+              this.setState({ pages, txs, loading: false }, () => {
+                if (txs.length
+                  && this.props.tx.blockHeight < txs[0].blockHeight) {
+                  this.props.setTXs(txs);
+                }
+              });
+            }
+          })
+          .catch(error => this.setState({ error, loading: false }));
+      }, 800);
     });
   };
 
@@ -78,23 +84,31 @@ class Movement extends Component {
 
     const select = (
       <Select
-        onChange={value => this.handleSize(value)}
-        selectedValue={this.state.size}
-        options={selectOptions} />
+        onChange={ value => this.handleSize(value) }
+        selectedValue={ this.state.size }
+        options={ selectOptions } />
     );
 
     return (
       <div>
-        <HorizontalRule
-          select={select}
-          title="Movement" />
-        <CardTXs txs={this.state.txs} addBadgeClassToValue={false} />
         <Pagination
-          current={this.state.page}
-          className="float-right"
-          onPage={this.handlePage}
-          total={this.state.pages} />
-        <div className="clearfix" />
+          current={ this.state.page }
+          className="text-center"
+          onPage={ this.handlePage }
+          total={ this.state.pages } />
+        <HorizontalRule
+          select={ select } />
+        {/* <div className="clearfix" /> */}
+        {/* <HorizontalBreak
+          select={ select } /> */}
+        <CardTXs txs={ this.state.txs } />
+        <Pagination
+          current={ this.state.page }
+          className="text-center"
+          onPage={ this.handlePage }
+          total={ this.state.pages } />
+        <HorizontalRule
+        select={ select } />
       </div>
     );
   };

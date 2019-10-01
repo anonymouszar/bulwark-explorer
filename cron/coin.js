@@ -1,5 +1,4 @@
-
-require('babel-polyfill');
+// require('babel-polyfill');
 const config = require('../config');
 const { exit, rpc } = require('../lib/cron');
 const fetch = require('../lib/fetch');
@@ -7,6 +6,7 @@ const locker = require('../lib/locker');
 const moment = require('moment');
 // Models.
 const Coin = require('../model/coin');
+const UTXO = require('../model/utxo');
 
 /**
  * Get the coin related information including things
@@ -15,16 +15,21 @@ const Coin = require('../model/coin');
 async function syncCoin() {
   const date = moment().utc().startOf('minute').toDate();
   // Setup the coinmarketcap.com api url.
-  const url = `${ config.coingecko.api }${ config.coingecko.ticker }`;
+  const url = `${ config.coinMarketCap.api }${ config.coinMarketCap.ticker }`;
 
   const info = await rpc.call('getblockchaininfo');
-  const masternodes = await rpc.call('masternode',['count']);
+  const masternodes_total = await rpc.call('masternode',['count','enabled']);
+  const masternode_enabled = await rpc.call('masternode',['count'])
+  const networkinfo = await rpc.call('getnetworkinfo');
   const nethashps = await rpc.call('getnetworkhashps');
-
+  const utxo = await UTXO.aggregate([
+    {$match: {address: {$not: /OP_RETURN/}}},
+    {$group: {_id: 'supply', total: {$sum: '$value'}}}
+  ]);
+  if (!utxo.length)
+    utxo[0] = { total: 0 };
+  
   let market = await fetch(url);
-  // if (Array.isArray(market)) {
-  //   market = market.length ? market[0] : {};
-  // }
 
   const coin = new Coin({
     cap: market.market_data.market_cap.usd,
@@ -33,12 +38,12 @@ async function syncCoin() {
     btc: market.tickers[0].converted_last.btc,
     ltc: market.tickers[0].last,
     diff: info.difficulty,
-    mnsOff: masternodes.total - masternodes.stable,
-    mnsOn: masternodes.stable,
+    mnsOff: masternodes_total - masternodes_enabled,
+    mnsOn: masternodes_enabled,
     netHash: nethashps,
-    peers: info.connections,
+    peers: networkinfo.connections,
     status: 'Online',
-    supply: market.market_data.circulating_supply, // TODO: change to actual count from db.
+    supply: utxo[0].total,
     usd: market.tickers[0].converted_last.usd
   });
 

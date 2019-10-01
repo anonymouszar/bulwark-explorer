@@ -1,10 +1,8 @@
-
+const { BigNumber } = require('bignumber.js')
 const chain = require('../../lib/blockchain');
 const { forEach } = require('p-iteration');
 const moment = require('moment');
 const { rpc } = require('../../lib/cron');
-const cache = require('../lib/cache');
-
 
 // System models for query and etc.
 const Block = require('../../model/block');
@@ -12,7 +10,6 @@ const Coin = require('../../model/coin');
 const Masternode = require('../../model/masternode');
 const Peer = require('../../model/peer');
 const Rich = require('../../model/rich');
-const BlockRewardDetails = require('../../model/blockRewardDetails');
 const TX = require('../../model/tx');
 const UTXO = require('../../model/utxo');
 
@@ -23,53 +20,51 @@ const UTXO = require('../../model/utxo');
  */
 const getAddress = async (req, res) => {
   try {
-    const qtxs = TX
+    const txs = await TX
       .aggregate([
-        { $match: { 'vout.address': req.params.hash } },
-        {
-          $project:
-          {
-            vout:
-            {
-              $filter:
-              {
-                input: '$vout',
-                as: 'v',
-                cond: { $eq: ['$$v.address', req.params.hash] }
-              }
-            },
-            //blockHash: 1,
-            blockHeight: 1,
-            createdAt: 1,
-            txId: 1,
-            version: 1,
-            vin: 1,
-          }
-        },
-        { $sort: { blockHeight: -1 } }
+        {$match: {$or: [{'vout.address': req.params.hash},{'vin.address': req.params.hash}]}},
+        {$sort: {blockHeight: -1}}
       ])
-      .limit(100) //@todo Limit too 100 transactions at the moment, until we implement proper serverside pagination 
       .allowDiskUse(true)
-      .exec();
-    const qutxo = UTXO
-      .aggregate([
-        { $match: { address: req.params.hash } },
-        { $sort: { blockHeight: -1 } }
-      ])
-      .limit(100) //@todo Limit too 100 transactions at the moment, until we implement proper serverside pagination 
-      .allowDiskUse(true)
-      .exec();
+      .exec()
 
-    const masternodeForAddress = await Masternode.findOne({ addr: req.params.hash });
-    const isMasternode = !!masternodeForAddress;
+    const sent = txs.filter(tx => tx.vout[0].address !== 'NON_STANDARD')
+      .reduce((acc, tx) => acc.plus(tx.vin.reduce((a, t) => {
+        if (t.address === req.params.hash) {
+          return a.plus(BigNumber(t.value))
+        } else {
+          return a
+        }
+      }, BigNumber(0.0))), BigNumber(0.0))
 
-    const txs = await qtxs;
-    const utxo = await qutxo;
-    const balance = utxo.reduce((acc, tx) => acc + tx.value, 0.0);
-    const received = txs.reduce((acc, tx) => acc + tx.vout.reduce((a, t) => a + t.value, 0.0), 0.0);
+    const received = txs.filter(tx => tx.vout[0].address !== 'NON_STANDARD')
+      .reduce((acc, tx) => acc.plus(tx.vout.reduce((a, t) => {
+        if (t.address === req.params.hash) {
+          return a.plus(BigNumber(t.value))
+        } else {
+          return a
+        }
+      }, BigNumber(0.0))), BigNumber(0.0))
 
-    res.json({ balance, received, txs, utxo, isMasternode });
-  } catch (err) {
+    const staked = txs.filter(tx => tx.vout[0].address === 'NON_STANDARD')
+      .reduce((acc, tx) => acc.minus(tx.vin.reduce((a, t) => {
+        if (t.address === req.params.hash) {
+          return a.plus(BigNumber(t.value))
+        } else {
+          return a
+        }
+      }, BigNumber(0.0))).plus(tx.vout.reduce((a, t) => {
+        if (t.address === req.params.hash) {
+          return a.plus(BigNumber(t.value))
+        } else {
+          return a
+        }
+      }, BigNumber(0.0))), BigNumber(0.0))
+
+    const balance = received.plus(staked).minus(sent)
+    res.json({balance:balance.toNumber(), sent:sent.toNumber(), staked:staked.toNumber(),
+      received:received.toNumber(), txs });
+  } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -93,12 +88,12 @@ const getAvgBlockTime = () => {
 
     try {
       const date = moment.utc().subtract(24, 'hours').toDate();
-      const blocksCount = await Block.count({ createdAt: { $gt: date } });
+      const blocks = await Block.find({ createdAt: { $gt: date } });
       const seconds = 24 * 60 * 60;
 
-      cache = seconds / blocksCount;
+      cache = seconds / blocks.length;
       cutOff = moment().utc().add(60, 'seconds').unix();
-    } catch (err) {
+    } catch(err) {
       console.log(err);
     } finally {
       if (!cache) {
@@ -142,12 +137,12 @@ const getAvgMNTime = () => {
 
     try {
       const date = moment.utc().subtract(24, 'hours').toDate();
-      const blocksCount = await Block.count({ createdAt: { $gt: date } });
-      const masternodesCount = await Masternode.count();
+      const blocks = await Block.find({ createdAt: { $gt: date } });
+      const mns = await Masternode.find();
 
-      cache = (24.0 / (blocksCount / masternodesCount));
+      cache = (24.0 / (blocks.length / mns.length));
       cutOff = moment().utc().add(5, 'minutes').unix();
-    } catch (err) {
+    } catch(err) {
       console.log(err);
     } finally {
       if (!cache) {
@@ -189,10 +184,10 @@ const getBlock = async (req, res) => {
       return;
     }
 
-    const txs = await TX.find({ txId: { $in: block.txs } }, { involvedAddresses: 0 });
+    const txs = await TX.find({ txId: { $in: block.txs }});
 
     res.json({ block, txs });
-  } catch (err) {
+  } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -263,7 +258,7 @@ const getCoinsWeek = () => {
 
       cache = await Coin.aggregate(qry);
       cutOff = moment().utc().add(90, 'seconds').unix();
-    } catch (err) {
+    } catch(err) {
       console.log(err);
     } finally {
       loading = false;
@@ -301,7 +296,7 @@ const getIsBlock = async (req, res) => {
     }
 
     res.json(isBlock);
-  } catch (err) {
+  } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -316,29 +311,11 @@ const getMasternodes = async (req, res) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 1000;
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
-
-    var query = {};
-
-    // Optionally it's possible to filter masternodes running on a specific address
-    if (req.query.hash) {
-      query.addr = req.query.hash;
-    }
-
-    // Optionally it's possible to filter masternodes running on a specific range of addresses. Pass in addresses as comma-seprated list
-    // In redux we pass in an array and it automatically converts into a comma-seperated list of addresses
-    if (req.query.addresses) {
-      const addressList = req.query.addresses.split(',');
-      // At the moment the limit of addresses in a single query is 25 but this number will be increased later, perhaps with some form of caching
-      if (addressList.length < 25) {
-        query.addr = { "$in": addressList };
-      }
-    }
-
-    const total = await Masternode.count(query);
-    const mns = await Masternode.find(query).skip(skip).limit(limit).sort({ lastPaidAt: -1, status: 1 });
+    const total = await Masternode.find().sort({ lastPaidAt: -1, status: 1 }).countDocuments();
+    const mns = await Masternode.find().skip(skip).limit(limit).sort({ lastPaidAt: -1, status: 1 });
 
     res.json({ mns, pages: total <= limit ? 1 : Math.ceil(total / limit) });
-  } catch (err) {
+  } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -352,10 +329,10 @@ const getMasternodes = async (req, res) => {
 const getMasternodeByAddress = async (req, res) => {
   try {
     const hash = req.params.hash;
-    const mns = await Masternode.findOne({ addr: hash });
+    const mns = await Masternode.findOne({ addr: hash});
 
     res.json({ mns });
-  } catch (err) {
+  } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -368,13 +345,10 @@ const getMasternodeByAddress = async (req, res) => {
  */
 const getMasternodeCount = async (req, res) => {
   try {
-    const masternodeCount = await cache.getFromCache("masternodeCount", moment().utc().add(60, 'seconds').unix(), async () => {
-      const coin = await Coin.findOne().sort({ createdAt: -1 });
-      return { enabled: coin.mnsOn, total: coin.mnsOff + coin.mnsOn };
-    });
+    const coin = await Coin.findOne().sort({ createdAt: -1 });
 
-    res.json(masternodeCount);
-  } catch (err) {
+    res.json({ enabled: coin.mnsOn, total: coin.mnsOff + coin.mnsOn });
+  } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -410,19 +384,18 @@ const getSupply = async (req, res) => {
     let c = 0; // Circulating supply.
     let t = 0; // Total supply.
 
-    let supply = await cache.getFromCache("supply", moment().utc().add(1, 'hours').unix(), async () => {
-      const utxo = await UTXO.aggregate([
-        { $group: { _id: 'supply', total: { $sum: '$value' } } }
-      ]);
+    const utxo = await UTXO.aggregate([
+      {$match: {address: {$ne: 'ZERO_COIN_MINT'}}},
+      { $group: { _id: 'supply', total: { $sum: '$value' } } }
+    ]);
 
-      t = utxo[0].total;
-      c = t;
+    const info = await rpc.call('getinfo');
 
-      return { c, t };
-    });
+    t = utxo[0].total + info.zVESTXsupply.total;
+    c = t;
 
-    res.json(supply);
-  } catch (err) {
+    res.json({ c, t });
+  } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -433,19 +406,17 @@ const getSupply = async (req, res) => {
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getTop100 = async (req, res) => {
-  try {
-    const docs = await cache.getFromCache("top100", moment().utc().add(1, 'hours').unix(), async () => {
-      return await Rich.find()
-        .limit(100)
-        .sort({ value: -1 });
+const getTop100 = (req, res) => {
+  Rich.find()
+    .limit(100)
+    .sort({ value: -1 })
+    .then((docs) => {
+      res.json(docs);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err.message || err);
     });
-
-    res.json(docs);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send(err.message || err);
-  }
 };
 
 /**
@@ -453,20 +424,17 @@ const getTop100 = async (req, res) => {
  * @param {Object} req The request object.
  * @param {Object} res The response object.
  */
-const getTXLatest = async (req, res) => {
-  try {
-    const docs = await cache.getFromCache("txLatest", moment().utc().add(90, 'seconds').unix(), async () => {
-      return await TX.find({}, { involvedAddresses: 0 }) // Don't include involvedAddresses for txs as 1000 inputs would give 1000 extra addresses
-        .populate('blockRewardDetails')
-        .limit(10)
-        .sort({ blockHeight: -1 });
+const getTXLatest = (req, res) => {
+  TX.find()
+    .limit(10)
+    .sort({ blockHeight: -1 })
+    .then((docs) => {
+      res.json(docs);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err.message || err);
     });
-
-    res.json(docs);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send(err.message || err);
-  }
 };
 
 /**
@@ -479,14 +447,41 @@ const getTX = async (req, res) => {
     const query = isNaN(req.params.hash)
       ? { txId: req.params.hash }
       : { height: req.params.hash };
-    const tx = await TX.findOne(query).populate('blockRewardDetails');
+    const tx = await TX.findOne(query);
     if (!tx) {
       res.status(404).send('Unable to find the transaction!');
       return;
     }
 
-    res.json(tx);
-  } catch (err) {
+    // Get the transactions that are found in the
+    // vin section of the tx.
+    const vin = [];
+    await forEach(tx.vin, async (vi) => {
+      if (tx.vout[0].address === 'NON_STANDARD' && !vi.coinbase) {
+        if (vi.isZcSpend) {
+          vin.push({address: 'ZERO_COIN_SPEND', value: vi.sequence, zerocoinstake: true})
+        } else {
+          const t = await TX.findOne({txId: vi.txId})
+          vin.push({address: t.vout[vi.vout].address, value: t.vout[vi.vout].value, coinstake: true})
+        }
+      } else if(vi.isZcSpend){
+        vin.push({isZcSpend:true, value: vi.sequence});
+      }else if (vi.txId) {
+        const t = await TX.findOne({txId: vi.txId})
+        if (!!t) {
+          t.vout.forEach((vo) => {
+            if (vo.n === vi.vout) {
+              vin.push({ address: vo.address, value: vo.value });
+            }
+          });
+        }
+      } else if (vi.coinbase) {
+        vin.push(vi);
+      }
+    });
+
+    res.json({ ...tx.toObject(), vin });
+  } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
@@ -501,40 +496,15 @@ const getTXs = async (req, res) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
-
-    const total = await TX.count();
-    const txs = await TX.find({}, { involvedAddresses: 0 }).populate('blockRewardDetails').skip(skip).limit(limit).sort({ blockHeight: -1 });
-    
-    //@todo If instant load txs get abused with mass input/output spam then we can output ones where inputs<=3 and outputs<=3
+    const total = await TX.find().sort({ blockHeight: -1 }).countDocuments();
+    const txs = await TX.find().skip(skip).limit(limit).sort({ blockHeight: -1 });
 
     res.json({ txs, pages: total <= limit ? 1 : Math.ceil(total / limit) });
-  } catch (err) {
+  } catch(err) {
     console.log(err);
     res.status(500).send(err.message || err);
   }
 };
-
-/**
- * Return a paginated list of transactions.
- * @param {Object} req The request object.
- * @param {Object} res The response object.
- */
-const getRewards = async (req, res) => {
-  try {
-    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
-    const skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
-
-    const total = await BlockRewardDetails.count();
-    const rewards = await BlockRewardDetails.find().skip(skip).limit(limit).sort({ blockHeight: -1 });
-    
-    res.json({ rewards, pages: total <= limit ? 1 : Math.ceil(total / limit) });
-  } catch (err) {
-    console.log(err);
-    res.status(500).send(err.message || err);
-  }
-};
-
-
 
 /**
  * Return all the transactions for an entire week.
@@ -569,7 +539,7 @@ const getTXsWeek = () => {
 
       cache = await TX.aggregate(qry);
       cutOff = moment().utc().add(90, 'seconds').unix();
-    } catch (err) {
+    } catch(err) {
       console.log(err);
     } finally {
       loading = false;
@@ -591,7 +561,7 @@ const getTXsWeek = () => {
   };
 };
 
-module.exports = {
+module.exports =  {
   getAddress,
   getAvgBlockTime,
   getAvgMNTime,
@@ -609,6 +579,5 @@ module.exports = {
   getTXLatest,
   getTX,
   getTXs,
-  getRewards,
   getTXsWeek
 };

@@ -35,7 +35,7 @@ const coin = (state = coinInit, action) => {
  */
 const coins = (state = [], action) => {
   if (action.type === COINS && action.payload) {
-    return [...action.payload];
+    return [ ...action.payload ];
   }
   return state;
 };
@@ -47,27 +47,7 @@ const coins = (state = [], action) => {
  */
 const txs = (state = [], action) => {
   if (action.type === TXS && action.payload) {
-
-    // Lazily Ensure we never have more than 1000 items in store
-    if (state.length > 1000) {
-      state.splice(0, 1000);
-    }
-
-    // Merge state with the new payload
-    action.payload.forEach((tx, index) => {
-      let matchingTx = state.find(stateTx => stateTx.txId == tx.txId);
-      if (matchingTx) {
-        Object.assign(matchingTx, tx); // Copy new payload data to exisiting object
-        
-        return;
-      }
-      state.push(tx); // Add new tx to store
-    });
-
-    // Ensure the transactions are ordered with most recent blocks first
-    state.sort((tx1, tx2) => {
-      return tx2.blockHeight - tx1.blockHeight;
-    });
+    return [ ...action.payload ];
   }
   return state;
 };
