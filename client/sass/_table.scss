@@ -98,7 +98,7 @@
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     content: "\f51e";
-    color: $theme-dark-blue;
+    color: $theme-dark-golden;
     padding-right: 4px;
   }
 
@@ -110,7 +110,7 @@
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     content: "\f074";
-    color: $theme-dark-blue;
+    color: $theme-dark-golden;
     padding-right: 4px;
     display: inline-block;
     -webkit-transform: rotate(0deg);
@@ -294,7 +294,7 @@
       font-weight: 900;
 
       span {
-        color: $theme-dark-blue;
+        color: $theme-dark-golden;
       }
     }
 	}

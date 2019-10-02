@@ -64,3 +64,13 @@ config.js
 .DS_Store
 
 .vscode/
+
+config.js
+public/bundle.js
+public/bundle.js.gz
+public/bundle.js.map
+public/fetch.worker.js
+public/fetch.worker.js.gz
+public/img/vestxlogo.png
+public/index.html
+yarn.lock

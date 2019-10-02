@@ -1,7 +1,7 @@
 
 /* Variables */
 $black: #151515;
-$blue: #010e35;
+$blue: #1e2633;
 $blue-dark: #6cacbd;
 $blue-light: #d9eced;
 $sblue: rgba(41, 77, 234, 1);
@@ -15,12 +15,14 @@ $red: #DD566E;
 $orange: #f7981c;
 $white: #ffffff;
 $white-light: rgba(255,255,255,.5);
+$golden: #ef6d3c;
+$golden_light: #ffbc3f;
 
 $margin: 1rem;
 $margin-lg: 1.5rem;
 
-$menu-gradient-main: #010e35;
-$menu-gradient-secondary: #010e35;
+$menu-gradient-main: #1e2633;
+$menu-gradient-secondary: #1e2633;
 $menu-width-open: 100%;
 $menu-width-close: 110px;
 $menu-mobile-height: 70px;
@@ -72,6 +74,8 @@ $pagination-disabled-border-color:  $gray;
 
 $theme-dark-blue:					#0f65d4;
 $theme-light-blue:					#1ff5ff;
+$theme-dark-golden:					#ef6d3c;
+$theme-light-golden: 				#ffbc3f;
 
 @import "~bootstrap/scss/bootstrap.scss";
 @import "./sass/font";
@@ -97,7 +101,7 @@ $theme-light-blue:					#1ff5ff;
 /* Containers */
 @import "./sass/api";
 .badge-info{
-	background: $theme-dark-blue;
+	background: $theme-dark-golden;
 }
 
 /* Reset */

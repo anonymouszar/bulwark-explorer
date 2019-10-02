@@ -13,7 +13,7 @@ const CardROI = ({ coin }) => {
   const roi = blockchain.getROI(subsidy, coin.mnsOn);
 
   return (
-    <Card title="Soverain Coin Information and Metrics">
+    <Card title="VestxCoin Information and Metrics">
       <div className="row">
         <div className="col-sm-12 col-md-6">
           Active/Total Masternodes

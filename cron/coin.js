@@ -15,11 +15,11 @@ const UTXO = require('../model/utxo');
 async function syncCoin() {
   const date = moment().utc().startOf('minute').toDate();
   // Setup the coinmarketcap.com api url.
-  const url = `${ config.coinMarketCap.api }${ config.coinMarketCap.ticker }`;
+  const url = `${ config.coingecko.api }${ config.coingecko.ticker }`;
 
   const info = await rpc.call('getblockchaininfo');
   const masternodes_total = await rpc.call('masternode',['count','enabled']);
-  const masternode_enabled = await rpc.call('masternode',['count'])
+  const masternodes_enabled = await rpc.call('masternode',['count'])
   const networkinfo = await rpc.call('getnetworkinfo');
   const nethashps = await rpc.call('getnetworkhashps');
   const utxo = await UTXO.aggregate([

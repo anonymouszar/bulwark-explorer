@@ -187,7 +187,7 @@ class App extends Component {
             {/* <Footer /> */}
             <FooterMenu links={MenuData} onSearch={ this.handleSearch } />
             <div className="container" style={{ fontSize: '14px', color: 'gray', paddingBottom: '40px', textAlign: 'left' }}>
-              <p>ⓒ 2019 Soverain Technology Group - All Rights Reserved <a href="https://www.vestxcoin.com">www.vestxcoin.com</a></p>
+              <p>ⓒ 2019 Vestx Developers All Rights Reserved <a href="https://www.vestxcoin.com">www.vestxcoin.com</a></p>
             </div>
           </div>
         </div>

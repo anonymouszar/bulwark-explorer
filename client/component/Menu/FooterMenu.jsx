@@ -69,7 +69,7 @@ export default class FooterMenu extends Component {
         <div className={ `menu-desktop ${ this.state.isOpen ? 'menu-desktop--open' : 'menu-desktop--close' }` }>
           <div className="menu-desktop__content-wrapper">
             <div className="menu-desktop__header">
-              <img src="/img/sovelogo.png" className="menu-desktop__logo" />
+              <img src="/img/vestxlogo.png" className="menu-desktop__logo" />
             </div>
             <div className="menu-desktop__nav container">
               { this.getLinks() }

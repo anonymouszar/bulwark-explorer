@@ -14,7 +14,7 @@ const Masternode = mongoose.model('Masternode', new mongoose.Schema({
   lastAt: { required: true, type: Date },
   lastPaidAt: { index: true, type: Date },
   network: { type: String },
-  rank: { type: Number },
+  lastBlockPaid: { type: Number },
   status: { required: true, type: String },
   txHash: { index: true, required: true, type: String },
   txOutIdx: { required: true, type: Number },

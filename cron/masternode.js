@@ -22,21 +22,54 @@ async function syncMasternode() {
   // Increase the timeout for masternode.
   rpc.timeout(10000); // 10 secs
 
-  const mns = await rpc.call('masternodelist',['full']);
+  const mnsJSON = await rpc.call('masternodelist',['full']);
+  
+  var mns = []
+
+  var keys = Object.keys(mnsJSON);
+    keys.forEach(function(key){
+        var mndetail = mnsJSON[key];
+
+        var separators = [' ', '\\\+', '-', '\\\(', '\\\)', '\\*', '/', ':', '\\\?'];
+        var txarr = key.split(new RegExp(separators.join('|'), 'g'));
+        var mndetailarr = mndetail.trim().split(' '); 
+        var mnfilterarr = mndetailarr.filter(function (el) {
+            return el != "";
+        });
+        
+        var mn = {
+            active: mnfilterarr[4],
+            addr: mnfilterarr[2],
+            createdAt: date,
+            lastAt: new Date(mnfilterarr[3] * 1000),
+            lastPaidAt: new Date(mnfilterarr[5] * 1000),
+            network: mnfilterarr[7],
+            lastBlockPaid: mnfilterarr[6],
+            status: mnfilterarr[0],
+            txHash: txarr[1],
+            txOutIdx: txarr[2],
+            ver: mnfilterarr[1]
+        }
+        mns.push(mn);
+    });
+  
+  
   const inserts = [];
   await forEach(mns, async (mn) => {
+    console.log('build mns');
+
     const masternode = new Masternode({
-      active: mn.activetime,
+      active: mn.active,
       addr: mn.addr,
       createdAt: date,
-      lastAt: new Date(mn.lastseen * 1000),
-      lastPaidAt: new Date(mn.lastpaid * 1000),
+      lastAt: mn.lastAt,
+      lastPaidAt: mn.lastPaidAt,
       network: mn.network,
-      rank: mn.rank,
+      lastBlockPaid: mn.lastBlockPaid,
       status: mn.status,
-      txHash: mn.txhash,
-      txOutIdx: mn.outidx,
-      ver: mn.version
+      txHash: mn.txHash,
+      txOutIdx: mn.txOutIdx,
+      ver: mn.ver
     });
 
     inserts.push(masternode);

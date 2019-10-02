@@ -19,7 +19,7 @@ class Footer extends Component {
     return (
       <div className="footer container">
         <div className="footer__block">
-          <img className="footer__logo" src="/img/sovelogo.png" />
+          <img className="footer__logo" src="/img/vestxlogo.png" />
         </div>
         <div className="footer__block">
           <div className="footer__data-wrapper">
@@ -49,16 +49,16 @@ class Footer extends Component {
         </div>
         <div className="footer__block">
           <div className="menu-desktop__social ml-auto">
-            <a href="https://github.com/soveraintg" target="_blank">
+            <a href="https://github.com/vestx" target="_blank">
               <Icon name="github" className="fab footer__social-media-icon" />
             </a>
-            <a href="https://t.me/soveraintg" target="_blank">
+            <a href="https://t.me/vestxcoin" target="_blank">
               <Icon name="telegram" className="fab footer__social-media-icon" />
             </a>
-            <a href="https://open.kakao.com/o/gPsdW8T" target="_blank">
-              <Icon name="kakao" className="fab footer__social-media-icon" />
+            <a href="https://discord.gg/HxX8Aqs" target="_blank">
+              <Icon name="discord" className="fab footer__social-media-icon" />
             </a>
-            <a href="https://twitter.com/soveraintg" target="_blank">
+            <a href="https://twitter.com/vestxcoin" target="_blank">
               <Icon name="twitter" className="fab footer__social-media-icon" />
             </a>
           </div>

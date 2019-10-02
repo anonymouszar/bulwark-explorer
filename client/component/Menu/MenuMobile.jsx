@@ -87,7 +87,7 @@ export default class MenuMobile extends Component {
               <div>
                 <a className="vestx-link--mobile" href="https://www.vestxcoin.com">www.vestxcoin.com</a>
               </div>
-              <div className="menu-mobile__footer--copyright">&copy; Copyright 2019 Soverain Technology Group. All Rights Reserved</div>
+              <div className="menu-mobile__footer--copyright">&copy; Copyright 2019 Vestx Developers. All Rights Reserved</div>
             </div>
           </div>
           {/* <div className="menu-mobile__search-wrapper">
